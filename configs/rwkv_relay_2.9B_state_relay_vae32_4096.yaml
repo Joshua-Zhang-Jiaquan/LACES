@@ -1,0 +1,83 @@
+# STAR-LDM-style on 2.9B (frozen): VAE + Latent Diffusion + state injection.
+#
+# Same architecture as the 0.4B variant, scaled to 2.9B backbone (32 layers,
+# 2560 hidden, 40 heads × 64). Frozen backbone is mandatory at this scale —
+# only ~7% params trainable (state basis + VAE encoder + Denoiser + heads).
+#
+# Single-GPU run; ~2-3 s/step on H200, 200k steps ≈ 5-6 days.
+
+config_name: rwkv_relay_2.9B_state_relay_vae32_4096
+
+data:
+  use_preprocessed: true
+  token_dir: /inspire/hdd/global_user/zhangjiaquan-253108540222/research/DiffRwkv/preprocessed_data/fineweb_4096_full
+  latent_dir: null
+  max_length: 4096
+  num_workers: 4
+  max_samples: null
+  use_external_latents: false
+
+model:
+  type: "rwkv_state_relay"
+  rwkv_name: "RWKV/RWKV7-Goose-World3-2.9B-HF"
+  rwkv_local_path: "/inspire/hdd/global_user/zhangjiaquan-253108540222/models/RWKV7-Goose-World3-2.9B-HF"
+  rwkv_trust_remote_code: true
+  add_mask_token: false
+  pad_token_strategy: "eos"
+
+  encoder_type: "variational"
+  latent_dim: 32
+  n_basis: 16
+
+  # Denoiser ε-predictor (small, z is 32-d — same as 0.4B)
+  denoiser_hidden: 256
+  denoiser_depth: 4
+  denoiser_num_heads: 4
+  denoiser_num_tokens: 4
+
+training:
+  seed: 42
+  num_epochs: 50
+  num_train_steps: 200000
+  train_batch_size: 4              # ↓ from 0.4B's 16 (2.9B activations 6× larger)
+  eval_batch_size: 2
+  dtype: bf16
+  lr_schedule: cosine
+  warmup_steps: 500
+  resume: null
+  world_size: 1
+  save_every_n_steps: 50000
+  stage: 3
+  gen_type: ddpm
+
+logging:
+  run_name: relay-2.9B-sh-denoiser-vae32-4096
+  wandb_project: relay
+  wandb_dir: ./outputs/
+  log_freq: 100
+  save_freq: 50000
+  save_dir: ./outputs_relay
+
+loss:
+  text_loss_weight: 1.0
+  diff_loss_weight: 1.0
+  kl_weight: 0.05
+  kl_warmup_steps: 2000
+  free_bits: 0.1
+
+optimizer:
+  name: adamw
+  lr: 1.0e-04
+  weight_decay: 0.01
+  beta1: 0.9
+  beta2: 0.95
+  eps: 1.0e-08
+  grad_clip_norm: 1.0
+
+tokenizer:
+  cache_dir: ./data/huggingface
+  local_files_only: true
+
+hydra:
+  job:
+    chdir: false

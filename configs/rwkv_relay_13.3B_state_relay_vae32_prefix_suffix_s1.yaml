@@ -1,0 +1,75 @@
+config_name: rwkv_relay_13.3B_state_relay_vae32_prefix_suffix_s1
+
+data:
+  use_preprocessed: true
+  token_dir: /inspire/hdd/global_user/zhangjiaquan-253108540222/research/DiffRwkv/preprocessed_data/owt_rwkv_tokens/train
+  latent_dir: null
+  max_length: 512
+  num_workers: 4
+  max_samples: null
+  use_external_latents: false
+
+model:
+  type: "rwkv_state_relay"
+  rwkv_name: "BlinkDL/rwkv7-g1"
+  rwkv_local_path: "/inspire/hdd/global_user/zhangjiaquan-253108540222/models/RWKV7-G1f-13.3B-HF"
+  rwkv_trust_remote_code: true
+  add_mask_token: false
+  pad_token_strategy: "eos"
+  encoder_type: "variational"
+  latent_dim: 32
+  n_basis: 16
+  denoiser_hidden: 256
+  denoiser_depth: 4
+  denoiser_num_heads: 4
+  denoiser_num_tokens: 4
+
+training:
+  seed: 42
+  num_epochs: 50
+  num_train_steps: 50000
+  train_batch_size: 8
+  eval_batch_size: 1
+  dtype: bf16
+  lr_schedule: cosine
+  warmup_steps: 500
+  resume: outputs_relay/test-v6-13.3B-h200-s0/step_00050000
+  world_size: 1
+  save_every_n_steps: 50000
+  stage: 1
+  gen_type: ddpm
+  prefix_suffix_s1: true
+  prefix_suffix_min_prefix: 32
+  prefix_suffix_min_suffix: 32
+
+logging:
+  run_name: test-v6-13.3B-s1-prefix-suffix
+  wandb_project: relay
+  wandb_dir: ./outputs/
+  log_freq: 100
+  save_freq: 50000
+  save_dir: ./outputs_relay
+
+loss:
+  text_loss_weight: 1.0
+  diff_loss_weight: 1.0
+  kl_weight: 0.05
+  kl_warmup_steps: 2000
+  free_bits: 0.1
+
+optimizer:
+  name: adamw
+  lr: 5.0e-05
+  weight_decay: 0.01
+  beta1: 0.9
+  beta2: 0.95
+  eps: 1.0e-08
+  grad_clip_norm: 1.0
+
+tokenizer:
+  cache_dir: ./data/huggingface
+  local_files_only: true
+
+hydra:
+  job:
+    chdir: false
