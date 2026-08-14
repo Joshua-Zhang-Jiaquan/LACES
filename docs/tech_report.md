@@ -150,22 +150,22 @@ entropy, collapsing exact-match by 4–6× with steps. Eval generators therefore
   `User: … Assistant:` + open a ```python fence, close-at-fence extraction) was added, but
   the **free all-masked canvas was simply untrained** — the model learned reconstruction,
   not synthesis.
-- The gen-lane retrain (`--gen-prob 0.3`) targeted exactly this gap, but **HumanEval3 on
-  `codecpt2-genlane/step_00004000` merged to iter16=0.0 / iter32=0.0 (n=164 each)** — the
-  identical failure taxonomy (161/155 `syntax_error`) as the no-gen-lane checkpoint. So
-  4000 steps at `--gen-prob 0.3` did **not** move free synthesis off zero: the corruption
-  shape was not the binding constraint at this scale. MBPP3 is still running.
+- The gen-lane retrain (`--gen-prob 0.3`) targeted exactly this gap, but **HumanEval3
+  merged to iter16=0.0 / iter32=0.0 (n=164) and MBPP3 merged to iter16=0.0 / iter32=0.0
+  (n=427)** — an unchanged (or slightly worse) failure taxonomy (98–100% `syntax_error`).
+  So 4000 steps at `--gen-prob 0.3` did **not** move free synthesis off zero: the
+  corruption shape was not the binding constraint at this scale.
 
 ---
 
 ## 5. In-Flight & Next
 
-- **Round-3 eval result (2026-08-14):** HumanEval3 on the gen-lane checkpoint = **0.0** —
-  the `--gen-prob 0.3` lane did not move synthesis off zero (see §4). MBPP3 in flight.
+- **Round-3 eval result (2026-08-14):** HumanEval3 = **0.0** and MBPP3 = **0.0** on the
+  gen-lane checkpoint — the `--gen-prob 0.3` lane did not move synthesis off zero (see §4).
 - **Qwen3.5-4B baseline:** a generic `hf_causal` eval adapter (`eval/capability/
   hf_causal_model.py`) measures the local Qwen3.5-4B (4.21B text params) with the same
-  scorer/sandbox/sharding — the Goal-2 bar to beat. HumanEval baseline auto-submitted
-  (job-84583f24), MBPP baseline deferred on pool quota.
+  scorer/sandbox/sharding — the Goal-2 bar to beat. Both baselines submitted
+  (HumanEval job-84583f24, MBPP job-add6bc69).
 - **Joint-Commit fast mode** (requirement 5): a small group-model for joint conditional
   probability of a committed group, rather than per-position marginals — 计划二 §4.x,
   the main unbuilt piece.
