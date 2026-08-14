@@ -1,0 +1,25 @@
+{
+  "auto_fault_tolerance": true,
+  "command": "bash -lc 'set -e; export DAN_SCALE_DIR=/inspire/hdd/project/multimodal-diffusion-language-model/zhangjiaquan-253108540222/DiffRWKV-RELAY/scale; export MODEL_KIND=birwkv_diffusion; export MODEL_DIR=/inspire/hdd/global_user/zhangjiaquan-253108540222/models/RWKV7-Goose-World3-2.9B-HF; export CKPT_DIR=/inspire/hdd/global_user/zhangjiaquan-253108540222/outputs_birwkv_diffusion/codecpt2-genlane/step_00004000; export TASK=code; export SUITE=mbpp; export TASKS_FILE=/inspire/hdd/global_user/zhangjiaquan-253108540222/capability_eval_data/tasks/mbpp.jsonl; export CONDITIONS=iter16,iter32; export SAMPLE_STEPS=16; export NGPUS=8; export NUM_SHARDS=8; export OUTDIR=/inspire/hdd/global_user/zhangjiaquan-253108540222/cap_eval_mbpp_birwkv3; export PROBE_ONLY=0; bash $DAN_SCALE_DIR/qz/launch_capability_eval.sh'",
+  "description": "MBPP round-3 on the GEN-LANE checkpoint codecpt2-genlane/step_00004000 (trained with --gen-prob 0.3 free-generation corruption lane). Tests the Goal-2 hypothesis: does the clean-prefix + all-masked-tail lane move MBPP pass@1 off ~0? Round-1/2 baseline on codecpt-2p9b: iter32 0.0023. Same chat-frame adapter and conditions (iter16,iter32) as round-2.",
+  "envs": [{"name": "NNODES", "value": "1"}],
+  "fault_tolerance_max_retry": 2,
+  "fault_tolerance_retry_interval_sec": 120,
+  "framework": "pytorch",
+  "framework_config": [
+    {
+      "image": "docker.sii.shaipower.online/inspire-studio/relay2:v2",
+      "image_type": "SOURCE_PRIVATE",
+      "instance_count": 1,
+      "shm_gi": 1800,
+      "spec_id": "36502e09-732e-4048-af74-2ee03c452ff3"
+    }
+  ],
+  "logic_compute_group_id": "lcg-45358cf3-8e14-466f-b429-d79a98eea327",
+  "max_running_time_ms": "14400000",
+  "name": "birwkv-eval-mbpp3-p1-h100",
+  "project_id": "project-632c8db8-4530-413a-ada5-df91774a7e09",
+  "task_priority": 4,
+  "tb_summary_path": "/inspire/hdd/global_user/zhangjiaquan-253108540222/cap_eval_mbpp_birwkv3/tb",
+  "workspace_id": "ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6"
+}

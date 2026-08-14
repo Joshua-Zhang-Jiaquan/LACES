@@ -1,0 +1,28 @@
+{
+  "auto_fault_tolerance": true,
+  "command": "bash -lc 'set -e; export DAN_SCALE_DIR=/inspire/hdd/global_user/zhangjiaquan-253108540222/qz_stage_traj4096_v7/scale; export MODEL_DIR=/inspire/hdd/global_user/zhangjiaquan-253108540222/models/RWKV7-Goose-World3-2.9B-HF; export SAVE_ROOT=/inspire/hdd/global_user/zhangjiaquan-253108540222/outputs_birwkv_diffusion; export TOKEN_DIR=/inspire/hdd/global_user/zhangjiaquan-253108540222/research/DiffRwkv/preprocessed_data/fineweb_4096_packed_full,/inspire/hdd/global_user/zhangjiaquan-253108540222/research/DiffRwkv/preprocessed_data/capability_mixture_4096_packed; MODE=parity bash $DAN_SCALE_DIR/qz/launch_birwkv_diffusion.sh && MODE=train RUN_NAME=convert-2p9b-bidir NNODES=4 NGPUS=8 MICROBATCH=4 GRAD_ACCUM=2 STEPS=4000 TOKEN=birwkv_2p9b_conv EXTRA_ARGS=\"--gradient-checkpointing --stage-a-frac 0.05 --stage-b-frac 0.15 --lr 3e-5 --warmup-steps 200 --sampler-every 500\" bash $DAN_SCALE_DIR/qz/launch_birwkv_diffusion.sh'",
+  "description": "Phase-2: 2.9B BiRWKV diffusion conversion (code/plan Phase 2). Warm-start Goose-2.9B into dual-direction denoiser (parity gate first, fail-closed, per host). Staged unfreeze: <5% steps reverse+fusion only, <15% + top-half forward layers, then all params. 4000 steps x 1.05M tokens/step = 4.2B tokens, blend fineweb_4096_packed_full (9.4B pool) + capability_mixture_4096_packed (0.92B). Absorbing-mask noise mixture, causal replay 0.30->0.10, atomic ckpt every 250 steps, sampler metrics every 500. GATES from 0.4B pilot: bidir beat causal control by 0.97 nats val CE (2.63/3.96/5.97 vs 4.13/5.24/6.60 by bucket), em@1 0.212 vs 0.129 @70% mask -- proceeding per approved plan. Exit gates: causal replay <=5% worse than init 2.82, masked CE falls in all buckets, iterative>=single-step by end, 12h stability.",
+  "envs": [
+    {"name": "NNODES", "value": "4"},
+    {"name": "NGPUS", "value": "8"}
+  ],
+  "fault_tolerance_max_retry": 3,
+  "fault_tolerance_retry_interval_sec": 180,
+  "framework": "pytorch",
+  "framework_config": [
+    {
+      "image": "docker.sii.shaipower.online/inspire-studio/relay2:v2",
+      "image_type": "SOURCE_PRIVATE",
+      "instance_count": 4,
+      "shm_gi": 1800,
+      "spec_id": "7166bd2e-6cbe-4bd9-be38-762d11003e7f"
+    }
+  ],
+  "logic_compute_group_id": "lcg-df089db8-817a-4aa8-a164-eb1a32948564",
+  "max_running_time_ms": "172800000",
+  "name": "birwkv-convert-2p9b-p4-h200",
+  "project_id": "project-160ccb20-98ab-4538-a847-01d1f83d5b0f",
+  "task_priority": 4,
+  "tb_summary_path": "/inspire/hdd/global_user/zhangjiaquan-253108540222/outputs_birwkv_diffusion/tb",
+  "workspace_id": "ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6"
+}

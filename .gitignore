@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pt
+*.pth
+*.safetensors
+*.bin
+*.onnx
+*.gguf
+core
+core.*
+.omo/

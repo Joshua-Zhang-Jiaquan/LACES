@@ -1,0 +1,25 @@
+{
+  "auto_fault_tolerance": true,
+  "command": "bash -lc 'set -e; cd /inspire/hdd/project/multimodal-diffusion-language-model/zhangjiaquan-253108540222/DiffRWKV-RELAY/scale; export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1; CKPT=/inspire/hdd/global_user/zhangjiaquan-253108540222/outputs_birwkv_diffusion/codecpt-2p9b/step_00004000; MDIR=/inspire/hdd/global_user/zhangjiaquan-253108540222/models/RWKV7-Goose-World3-2.9B-HF; TDIRS=/inspire/hdd/global_user/zhangjiaquan-253108540222/research/DiffRwkv/preprocessed_data/fineweb_4096_packed_full,/inspire/hdd/global_user/zhangjiaquan-253108540222/research/DiffRwkv/preprocessed_data/capability_mixture_4096_packed; OUT=/inspire/hdd/global_user/zhangjiaquan-253108540222/birwkv_sampler_eval1; mkdir -p $OUT; pids=; for g in 0 1 2 3 4 5 6 7; do CUDA_VISIBLE_DEVICES=$g python -m eval.capability.sampler_eval_offline --ckpt_dir $CKPT --model_dir $MDIR --token_dirs $TDIRS --per_dir 256 --window 1024 --batch 16 --shard $g --num_shards 8 --output $OUT/sampler.shard${g}of8.json > $OUT/gpu$g.log 2>&1 & pids=\"$pids $!\"; done; rc=0; for p in $pids; do wait $p || rc=$?; done; if [ $rc -eq 0 ]; then python -m eval.capability.merge_eval --shards-glob \"$OUT/sampler.shard*of8.json\" --output-dir $OUT/merged --bootstrap-samples 1000; fi; exit $rc'",
+  "description": "RE-EVAL sampler grid after code-CPT (codecpt-2p9b step_00004000), SELF-CORRECTION OFF (the sc=ON grid on the conversion ckpt showed remask_threshold=0.25 destroys correct commits: em collapsed 4-6x with more steps). Same 512 held-out seqs, mask {0.3,0.5,0.7,0.9} x steps {1,8,16,32,64}, bootstrap CIs. The definitive iterative-vs-single measurement for the code/plan 4.6 gate; in-loop eval at this ckpt showed em@1 0.578 -> em@32 0.626 (sc off).",
+  "envs": [{"name": "NNODES", "value": "1"}],
+  "fault_tolerance_max_retry": 2,
+  "fault_tolerance_retry_interval_sec": 120,
+  "framework": "pytorch",
+  "framework_config": [
+    {
+      "image": "docker.sii.shaipower.online/inspire-studio/relay2:v2",
+      "image_type": "SOURCE_PRIVATE",
+      "instance_count": 1,
+      "shm_gi": 1800,
+      "spec_id": "36502e09-732e-4048-af74-2ee03c452ff3"
+    }
+  ],
+  "logic_compute_group_id": "lcg-45358cf3-8e14-466f-b429-d79a98eea327",
+  "max_running_time_ms": "14400000",
+  "name": "birwkv-sampler-eval1-p1-h100",
+  "project_id": "project-632c8db8-4530-413a-ada5-df91774a7e09",
+  "task_priority": 4,
+  "tb_summary_path": "/inspire/hdd/global_user/zhangjiaquan-253108540222/birwkv_sampler_eval1/tb",
+  "workspace_id": "ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6"
+}

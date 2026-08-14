@@ -1,0 +1,34 @@
+{
+  "auto_fault_tolerance": true,
+  "command": "bash -lc 'set -e; export DAN_SCALE_DIR=/inspire/hdd/global_user/zhangjiaquan-253108540222/qz_stage_traj4096_v7/scale; export MODEL_DIR=/inspire/hdd/global_user/zhangjiaquan-253108540222/models/rwkv7-0.4B; export SAVE_ROOT=/inspire/hdd/global_user/zhangjiaquan-253108540222/outputs_birwkv_diffusion; MODE=train RUN_NAME=pilot-0p4b-fwdonly NGPUS=8 MICROBATCH=8 GRAD_ACCUM=4 STEPS=2000 EXTRA_ARGS=\"--force-forward --gradient-checkpointing\" bash $DAN_SCALE_DIR/qz/launch_birwkv_diffusion.sh'",
+  "description": "Phase-1 pilot CONTROL ARM: identical to birwkv-pilot-0p4b-bidir (same seed/data/steps/objective) but --force-forward: the reverse stream is disabled so this is causal-RWKV masked diffusion. The bidir-vs-fwdonly delta on masked val CE (especially the high-noise bucket) and sampler exact-match is the headline evidence for whether the bidirectional denoiser matters at token level. No parity preflight needed (same weights load as bidir arm which gates on it).",
+  "envs": [
+    {
+      "name": "NNODES",
+      "value": "1"
+    },
+    {
+      "name": "NGPUS",
+      "value": "8"
+    }
+  ],
+  "fault_tolerance_max_retry": 2,
+  "fault_tolerance_retry_interval_sec": 120,
+  "framework": "pytorch",
+  "framework_config": [
+    {
+      "image": "docker.sii.shaipower.online/inspire-studio/relay2:v2",
+      "image_type": "SOURCE_PRIVATE",
+      "instance_count": 1,
+      "shm_gi": 1800,
+      "spec_id": "7166bd2e-6cbe-4bd9-be38-762d11003e7f"
+    }
+  ],
+  "logic_compute_group_id": "lcg-df089db8-817a-4aa8-a164-eb1a32948564",
+  "max_running_time_ms": "86400000",
+  "name": "birwkv-pilot-0p4b-fwdonly-p1-h200",
+  "project_id": "project-160ccb20-98ab-4538-a847-01d1f83d5b0f",
+  "task_priority": 4,
+  "tb_summary_path": "/inspire/hdd/global_user/zhangjiaquan-253108540222/outputs_birwkv_diffusion/tb",
+  "workspace_id": "ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6"
+}

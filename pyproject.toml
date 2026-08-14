@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "laces-birwkv-dlm"
+version = "0.1.0"
+description = "BiRWKV-7 token-level masked-diffusion language model (bidirectional RWKV-7 denoiser)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [{ name = "Jiaquan Zhang" }]
+dependencies = [
+    "torch>=2.5",
+    "transformers>=4.44",
+    "safetensors",
+    "numpy",
+    "flash-linear-attention>=0.3.0",  # fla: RWKV7Attention / RWKV7Config
+    "typing-extensions",
+]
+
+[project.optional-dependencies]
+dev = ["pytest", "ruff"]
+
+[tool.setuptools]
+packages = ["models", "train", "data", "eval", "eval.capability"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py310"

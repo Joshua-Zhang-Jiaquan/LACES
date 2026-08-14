@@ -1,0 +1,27 @@
+{
+  "auto_fault_tolerance": false,
+  "command": "bash -lc 'set -e; export DAN_SCALE_DIR=/inspire/hdd/project/multimodal-diffusion-language-model/zhangjiaquan-253108540222/DiffRWKV-RELAY/scale; export SAVE_ROOT=/inspire/hdd/global_user/zhangjiaquan-253108540222/outputs_birwkv_diffusion; export RUN_NAME=birwkv-diff-0p4b; MODE=parity MODEL_DIR=/inspire/hdd/project/multimodal-diffusion-language-model/zhangjiaquan-253108540222/DiffRWKV-RELAY/base_models/rwkv7-0.4B-world bash $DAN_SCALE_DIR/qz/launch_birwkv_diffusion.sh && MODE=smoke NGPUS=8 MICROBATCH=2 bash $DAN_SCALE_DIR/qz/launch_birwkv_diffusion.sh'",
+  "description": "BiRWKV token-diffusion Phase-0/smoke gate (plan Steps 1.2 + 2 verify): (1) warm-start parity test -- load rwkv7-0.4B-world HF weights into BiRWKV7ForMaskedDiffusion, force_forward, logits must match the HF causal reference within bf16 tolerance (proves the HF->BiRWKV key remap before any training spend); (2) 20-step masked-diffusion training smoke on fineweb pack (absorbing-mask, noise-mixture buckets, causal replay aux, FSDP 8-GPU, atomic checkpoint at step 10+20 with resume). Fail-closed: smoke only runs if parity PASSes. This is the gate before the 0.4B pilot (bidir vs forward-only arms).",
+  "envs": [
+    {"name": "NNODES", "value": "1"},
+    {"name": "NGPUS", "value": "8"}
+  ],
+  "fault_tolerance_max_retry": 0,
+  "framework": "pytorch",
+  "framework_config": [
+    {
+      "image": "docker.sii.shaipower.online/inspire-studio/relay2:v2",
+      "image_type": "SOURCE_PRIVATE",
+      "instance_count": 1,
+      "shm_gi": 1800,
+      "spec_id": "7166bd2e-6cbe-4bd9-be38-762d11003e7f"
+    }
+  ],
+  "logic_compute_group_id": "lcg-df089db8-817a-4aa8-a164-eb1a32948564",
+  "max_running_time_ms": "7200000",
+  "name": "birwkv-diff-parity-smoke-p1-h200",
+  "project_id": "project-160ccb20-98ab-4538-a847-01d1f83d5b0f",
+  "task_priority": 4,
+  "tb_summary_path": "/inspire/hdd/global_user/zhangjiaquan-253108540222/outputs_birwkv_diffusion/tb",
+  "workspace_id": "ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6"
+}

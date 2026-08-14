@@ -1,0 +1,28 @@
+{
+  "auto_fault_tolerance": true,
+  "command": "bash -lc 'set -e; export DAN_SCALE_DIR=/inspire/hdd/global_user/zhangjiaquan-253108540222/qz_stage_traj4096_v7/scale; export MODEL_DIR=/inspire/hdd/global_user/zhangjiaquan-253108540222/models/RWKV7-Goose-World3-2.9B-HF; export SAVE_ROOT=/inspire/hdd/global_user/zhangjiaquan-253108540222/outputs_birwkv_diffusion; export TOKEN_DIR=/inspire/hdd/global_user/zhangjiaquan-253108540222/research/DiffRwkv/preprocessed_data/code_mixture_4096_packed,/inspire/hdd/global_user/zhangjiaquan-253108540222/research/DiffRwkv/preprocessed_data/fineweb_4096_packed_full; MODE=train RUN_NAME=codecpt-2p9b NNODES=4 NGPUS=8 MICROBATCH=4 GRAD_ACCUM=2 STEPS=4000 TOKEN=birwkv_codecpt EXTRA_ARGS=\"--gradient-checkpointing --resume-from /inspire/hdd/global_user/zhangjiaquan-253108540222/outputs_birwkv_diffusion/convert-2p9b-bidir/step_00004000 --lr 2e-5 --warmup-steps 200 --sampler-every 500\" bash $DAN_SCALE_DIR/qz/launch_birwkv_diffusion.sh'",
+  "description": "Stage C: code-CPT of the 2.9B BiRWKV diffusion denoiser. Weights-only warm start from convert-2p9b-bidir step_00004000 (fresh optimizer, no staged unfreeze -- already converted). Data: code_mixture_4096_packed (1.25B tokens: opencode+agenttrove+nemotron_post_tool) blended with fineweb (general replay); 4000 steps x 1.05M tok/step = 4.2B tokens. lr 2e-5 cosine, causal replay 0.30->0.10, atomic ckpt every 250. Goal: move the HumanEval/MBPP pass@1=0.0 baseline (74% syntax errors = no termination control; the SFT-formatted code pack carries EOS separators that teach termination in the masked regime). Re-eval after: sampler grid (self_correction OFF), HumanEval/MBPP (EOS-truncating adapter), MMLU maskce.",
+  "envs": [
+    {"name": "NNODES", "value": "4"},
+    {"name": "NGPUS", "value": "8"}
+  ],
+  "fault_tolerance_max_retry": 3,
+  "fault_tolerance_retry_interval_sec": 180,
+  "framework": "pytorch",
+  "framework_config": [
+    {
+      "image": "docker.sii.shaipower.online/inspire-studio/relay2:v2",
+      "image_type": "SOURCE_PRIVATE",
+      "instance_count": 4,
+      "shm_gi": 1800,
+      "spec_id": "7166bd2e-6cbe-4bd9-be38-762d11003e7f"
+    }
+  ],
+  "logic_compute_group_id": "lcg-df089db8-817a-4aa8-a164-eb1a32948564",
+  "max_running_time_ms": "172800000",
+  "name": "birwkv-codecpt-2p9b-p4-h200",
+  "project_id": "project-160ccb20-98ab-4538-a847-01d1f83d5b0f",
+  "task_priority": 4,
+  "tb_summary_path": "/inspire/hdd/global_user/zhangjiaquan-253108540222/outputs_birwkv_diffusion/tb",
+  "workspace_id": "ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6"
+}

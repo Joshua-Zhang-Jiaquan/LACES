@@ -1,0 +1,24 @@
+{
+  "auto_fault_tolerance": false,
+  "command": "bash -lc 'set -e; cd /inspire/hdd/project/multimodal-diffusion-language-model/zhangjiaquan-253108540222/DiffRWKV-RELAY/scale; export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1; OUT=/inspire/hdd/global_user/zhangjiaquan-253108540222/birwkv_completion_dumps; mkdir -p $OUT; python -m eval.capability.dump_completions --ckpt_dir /inspire/hdd/global_user/zhangjiaquan-253108540222/outputs_birwkv_diffusion/codecpt-2p9b/step_00004000 --model_dir /inspire/hdd/global_user/zhangjiaquan-253108540222/models/RWKV7-Goose-World3-2.9B-HF --tasks_file /inspire/hdd/global_user/zhangjiaquan-253108540222/capability_eval_data/tasks/humaneval.jsonl --suite humaneval --n 6 --steps 16 --out $OUT/humaneval_chatframe_dump.txt'",
+  "description": "DIAGNOSTIC round 2: dump 6 raw completions WITH the chat-frame adapter (User:...Assistant: + open python fence). Chat-frame HumanEval still 0.0 / 100% syntax_error; this shows what the model actually emits inside the in-distribution frame.",
+  "envs": [{"name": "NNODES", "value": "1"}],
+  "fault_tolerance_max_retry": 0,
+  "framework": "pytorch",
+  "framework_config": [
+    {
+      "image": "docker.sii.shaipower.online/inspire-studio/relay2:v2",
+      "image_type": "SOURCE_PRIVATE",
+      "instance_count": 1,
+      "shm_gi": 1800,
+      "spec_id": "36502e09-732e-4048-af74-2ee03c452ff3"
+    }
+  ],
+  "logic_compute_group_id": "lcg-45358cf3-8e14-466f-b429-d79a98eea327",
+  "max_running_time_ms": "3600000",
+  "name": "birwkv-dump-completions-p1-h100",
+  "project_id": "project-632c8db8-4530-413a-ada5-df91774a7e09",
+  "task_priority": 4,
+  "tb_summary_path": "/inspire/hdd/global_user/zhangjiaquan-253108540222/birwkv_completion_dumps/tb",
+  "workspace_id": "ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6"
+}

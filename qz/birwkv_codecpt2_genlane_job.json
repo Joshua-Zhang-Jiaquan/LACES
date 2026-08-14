@@ -1,0 +1,28 @@
+{
+  "auto_fault_tolerance": true,
+  "command": "bash -lc 'set -e; export DAN_SCALE_DIR=/inspire/hdd/global_user/zhangjiaquan-253108540222/qz_stage_traj4096_v7/scale; export MODEL_DIR=/inspire/hdd/global_user/zhangjiaquan-253108540222/models/RWKV7-Goose-World3-2.9B-HF; export SAVE_ROOT=/inspire/hdd/global_user/zhangjiaquan-253108540222/outputs_birwkv_diffusion; export TOKEN_DIR=/inspire/hdd/global_user/zhangjiaquan-253108540222/research/DiffRwkv/preprocessed_data/code_mixture_4096_packed,/inspire/hdd/global_user/zhangjiaquan-253108540222/research/DiffRwkv/preprocessed_data/fineweb_4096_packed_full; MODE=train RUN_NAME=codecpt2-genlane NNODES=4 NGPUS=8 MICROBATCH=4 GRAD_ACCUM=2 STEPS=4000 TOKEN=birwkv_codecpt_gen EXTRA_ARGS=\"--gradient-checkpointing --resume-from /inspire/hdd/global_user/zhangjiaquan-253108540222/outputs_birwkv_diffusion/codecpt-2p9b/step_00004000 --lr 2e-5 --warmup-steps 200 --sampler-every 500 --gen-prob 0.3\" bash $DAN_SCALE_DIR/qz/launch_birwkv_diffusion.sh'",
+  "description": "Stage C round 2: gen-lane code-CPT of the 2.9B BiRWKV diffusion denoiser. Weights-only warm start from codecpt-2p9b step_00004000 (fresh optimizer, step 0). New free-generation corruption lane: --gen-prob 0.3 gives 30% of rows a clean prefix (uniform 5-60% of sequence) followed by an all-masked contiguous canvas to the end -- the corruption shape of prompt->completion generation that block-local bucket masking never produced (Stage-C finding: strong infill, no synthesis; MBPP iter32 pass@1=0.23% was the only nonzero). Data: code_mixture_4096_packed + fineweb (general replay); 4000 steps x 1.05M tok/step. lr 2e-5 cosine, causal replay schedule, atomic ckpt every 250. Re-eval after: sampler grid, chat-frame HumanEval/MBPP.",
+  "envs": [
+    {"name": "NNODES", "value": "4"},
+    {"name": "NGPUS", "value": "8"}
+  ],
+  "fault_tolerance_max_retry": 3,
+  "fault_tolerance_retry_interval_sec": 180,
+  "framework": "pytorch",
+  "framework_config": [
+    {
+      "image": "docker.sii.shaipower.online/inspire-studio/relay2:v2",
+      "image_type": "SOURCE_PRIVATE",
+      "instance_count": 4,
+      "shm_gi": 1800,
+      "spec_id": "7166bd2e-6cbe-4bd9-be38-762d11003e7f"
+    }
+  ],
+  "logic_compute_group_id": "lcg-df089db8-817a-4aa8-a164-eb1a32948564",
+  "max_running_time_ms": "155000000",
+  "name": "birwkv-codecpt2-genlane-p4-h200",
+  "project_id": "project-160ccb20-98ab-4538-a847-01d1f83d5b0f",
+  "task_priority": 4,
+  "tb_summary_path": "/inspire/hdd/global_user/zhangjiaquan-253108540222/outputs_birwkv_diffusion/tb",
+  "workspace_id": "ws-9dcc0e1f-80a4-4af2-bc2f-0e352e7b17e6"
+}
