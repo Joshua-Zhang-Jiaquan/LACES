@@ -162,10 +162,10 @@ entropy, collapsing exact-match by 4–6× with steps. Eval generators therefore
 
 - **Round-3 eval result (2026-08-14):** HumanEval3 = **0.0** and MBPP3 = **0.0** on the
   gen-lane checkpoint — the `--gen-prob 0.3` lane did not move synthesis off zero (see §4).
-- **Qwen3.5-4B baseline:** a generic `hf_causal` eval adapter (`eval/capability/
-  hf_causal_model.py`) measures the local Qwen3.5-4B (4.21B text params) with the same
-  scorer/sandbox/sharding — the Goal-2 bar to beat. Both baselines submitted
-  (HumanEval job-84583f24, MBPP job-add6bc69).
+- **Qwen3.5-4B baseline (measured 2026-08-14): HumanEval pass@1 = 0.616** (CI95
+  0.537–0.689, n=164) and **MBPP pass@1 = 0.759** (CI95 0.717–0.801, n=427). This is the
+  Goal-2 bar; the BiRWKV arm is at 0.0/0.0, a **qualitative** gap (syntax_error vs
+  valid-code).
 - **Joint-Commit fast mode** (requirement 5): a small group-model for joint conditional
   probability of a committed group, rather than per-position marginals — 计划二 §4.x,
   the main unbuilt piece.
