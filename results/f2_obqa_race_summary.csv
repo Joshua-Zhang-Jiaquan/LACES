@@ -1,0 +1,10 @@
+task,f2_s12000_obqa_race
+lambada,
+mmlu,
+obqa,60.20
+hellaswag,
+race,52.60
+siqa,
+squad,
+story_cloze,
+tasks_average,56.40

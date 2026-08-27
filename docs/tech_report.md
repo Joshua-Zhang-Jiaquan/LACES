@@ -211,3 +211,31 @@ card (`SII-Jiaquan/LACES-BiRWKV-DLM-2.9B-genlane`).
 - Requires the `fla` (flash-linear-attention) CUDA kernels; the model cannot import on a
   CPU-only host.
 - The Joint-Commit fast mode and remasking revision are unbuilt.
+
+---
+
+## F2 continued pretrain (2026-08-27)
+
+**Release checkpoint: `f2-2p9b-ptcorpora/step_00012000`** — HF:
+`SII-Jiaquan/LACES-BiRWKV-DLM-2.9B-F2`.
+
+- 12.6B tokens on the PT corpora mixture (fineweb-edu/wiki/openwebmath/pg19),
+  warm start `f-2p9b-full/step_00011000` (Phase F, 11.5B) which itself warm-starts the
+  codecpt lineage. 256 seq × 4096 tokens/step.
+- **MMLU-proxy 50.00** (campaign high; StateDiffRWKV release baseline 43.50). OBQA 60.20,
+  RACE 52.60 (n=500 each, first-ever BiRWKV readings). Full ability-vs-FLOPs curve:
+  `results/ability_curve_f2.csv` — 41.50 → 44.50 across Phase F, then 44.5-50.0 across F2;
+  gains arrive late (>7B tokens).
+- **Causal ppl vs the frozen RWKV7-Goose-World3-2.9B backbone** (same tokens, same
+  protocol; `results/ppl_table_f2_vs_base.csv`): pg19 **12.58 vs 27.71**, owt **12.12 vs
+  30.39**, lm1b 4247 vs 5874 (OOD-dominated); wikitext103 10.99, lambada 26.49.
+- **Knowledge generalizes; generation does not.** HumanEval 0.0 / GSM8K 0.4% / MBPP 0.0 at
+  step 12000 — identical failure profile to the codecpt baseline (159/164 syntax_error).
+  Continued PT at this scale buys knowledge-identification only; code/math generation is a
+  decode-path property (see the commits-per-step analysis in this report).
+- New in this round (v5.3): the latent-guidance conditioning lane —
+  `models/boundary_field.py` (shared capture geometry), `models/latent_grid_diffrwkv.py`
+  (latent-prior RNN denoiser with learnable Gumbel schedule + self-conditioning +
+  flow-matching objective), `train/train_birwkv_diffusion.py --latent-z-source state`
+  (state-derived chunk-latent FiLM conditioning with oracle/deranged/zero gate arms).
+
